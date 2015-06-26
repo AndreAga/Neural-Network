@@ -64,11 +64,7 @@ class VarianceThreshold:
             value = attr[0]
             var = attr[1]
 
-            # Append the new list with all values
-            if value:
-                attributes_map.append([i, value, var])
-            else:
-                attributes_map.append([i, value, var])
+            attributes_map.append([i, value, var])
 
             i += 1
 
