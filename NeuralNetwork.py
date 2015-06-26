@@ -44,52 +44,25 @@ class NeuralNetwork:
         self.lower_bound = -rand_range
 
         # Set lists of zeros to input and output nodes
-        self.inputs = [0 for i in range(self.num_input)]
-        self.outputs = [0 for i in range(self.num_output)]
+        self.inputs = self.generate_matrix(False, 1, self.num_input)[0]
+        self.outputs = self.generate_matrix(False, 1, self.num_output)[0]
 
         # Set the confusion matrix
-        self.confusion_matrix = [[0 for i in range(self.num_output)] for j in range(self.num_output)]
+        self.confusion_matrix = self.generate_matrix(False, self.num_output, self.num_output)
 
-        # Set a matrix of zeros (Weight of Edges)
-        self.weights_inputs_hidden = [[0 for i in range(self.num_hidden)] for j in range(self.num_input)]
-        self.weights_hidden_hidden = [[0 for i in range(self.num_hidden)] for j in range(self.num_hidden)]
-        self.weights_hidden_outputs = [[0 for i in range(self.num_output)] for j in range(self.num_hidden)]
+        # Set a matrix of random values (Weight of Edges)
+        self.weights_inputs_hidden = self.generate_matrix(True, self.num_input, self.num_hidden)
+        self.weights_hidden_hidden = self.generate_matrix(True, self.num_hidden, self.num_hidden)
+        self.weights_hidden_outputs = self.generate_matrix(True, self.num_hidden, self.num_output)
 
-        # Set the biases for hidden and output nodes
-        self.hidden_biases_1 = [0 for i in range(self.num_hidden)]
-        self.hidden_biases_2 = [0 for i in range(self.num_hidden)]
-        self.output_biases = [0 for i in range(self.num_output)]
+        # Set the biases for hidden and output nodes with random values
+        self.hidden_biases_1 = self.generate_matrix(True, 1, self.num_hidden)[0]
+        self.hidden_biases_2 = self.generate_matrix(True, 1, self.num_hidden)[0]
+        self.output_biases = self.generate_matrix(True, 1, self.num_output)[0]
 
         # Set a support list for the hidden gradients
-        self.hidden_outputs = [0 for i in range(self.num_hidden)]
-        self.hidden_hidden = [0 for i in range(self.num_hidden)]
-
-        # Initialize the weight of edges (input -> hidden_1)
-        for init_i in range(self.num_input):
-            for init_h in range(self.num_hidden):
-                self.weights_inputs_hidden[init_i][init_h] = self.generate_rand()
-
-        # Initialize the weight of edges (hidden_1 -> hidden_2)
-        for init_h_1 in range(self.num_hidden):
-            for init_h_2 in range(self.num_hidden):
-                self.weights_hidden_hidden[init_h_1][init_h_2] = self.generate_rand()
-
-        # Initialize the weight of edges (hidden_2 -> output)
-        for init_h in range(self.num_hidden):
-            for init_o in range(self.num_output):
-                self.weights_hidden_outputs[init_h][init_o] = self.generate_rand()
-
-        # Initialize the bias of hidden_1 nodes
-        for init_h_1 in range(self.num_hidden):
-            self.hidden_biases_1[init_h_1] = self.generate_rand()
-
-        # Initialize the bias of hidden_2 nodes
-        for init_h_2 in range(self.num_hidden):
-            self.hidden_biases_2[init_h_2] = self.generate_rand()
-
-        # Initialize the bias of output nodes
-        for init_o in range(self.num_output):
-            self.output_biases[init_o] = self.generate_rand()
+        self.hidden_outputs = self.generate_matrix(False, 1, self.num_hidden)[0]
+        self.hidden_hidden = self.generate_matrix(False, 1, self.num_hidden)[0]
 
     # -------------------------------------------- #
 
@@ -97,7 +70,7 @@ class NeuralNetwork:
 
     def train(self, train_set, validation_set):
 
-        # Define two errors
+        # Define two errors (arbitrary values)
         old_error = 100001
         new_error = 100000
 
@@ -136,11 +109,12 @@ class NeuralNetwork:
                     for i in range(len(values[1])):
                         error_sum += (values[1][i] - self.outputs[i]) ** 2
 
-                # Compute new error
-                new_error = 0.5 * error_sum
+                # Compute Error = SUM[(Xt - Xn)^2] / 2
+                new_error = error_sum * 0.5
 
                 # If minimum error has been reached stop
-                if ((old_error - new_error) < self.early_stop) or ((tmp_error - old_error) < self.early_stop):
+                # It uses two errors to ensure that small fluctuations don't change early stopping in premature stopping
+                if ((old_error - new_error) <= self.early_stop) or ((tmp_error - old_error) <= self.early_stop):
                     break
 
     # -------------------------------------------- #
@@ -148,9 +122,6 @@ class NeuralNetwork:
     # --------------- TEST NETWORK  -------------- #
 
     def test(self, test_set):
-
-        # List of probabilistic distribution of the classification results
-        classifications = []
 
         # Number of tests classified correctly
         corrects = 0
@@ -163,9 +134,6 @@ class NeuralNetwork:
 
             # Compute Output on the attribute values
             self.evaluate_classification(values[0])
-
-            # Append the network result to the classification list
-            classifications.append(self.outputs)
 
             # Get the index of the MAX value in the output
             index = self.outputs.index(max(self.outputs))
@@ -180,7 +148,7 @@ class NeuralNetwork:
             if real_max == index:
                 corrects += 1
 
-        return [classifications, corrects, (len(test_set) - corrects)]
+        return [corrects, (len(test_set) - corrects)]
 
     # -------------------------------------------- #
 
@@ -188,9 +156,9 @@ class NeuralNetwork:
 
     def evaluate_classification(self, attribute_values):
 
-        hidden_sums_1 = [0 for i in range(self.num_hidden)]
-        hidden_sums_2 = [0 for i in range(self.num_hidden)]
-        output_sums = [0 for i in range(self.num_output)]
+        hidden_sums_1 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        hidden_sums_2 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        output_sums = self.generate_matrix(False, 1, self.num_output)[0]
 
         ############################################
         # STEP 0: Initialization of Input nodes    #
@@ -201,7 +169,7 @@ class NeuralNetwork:
         self.inputs = attribute_values[:]
 
         ############################################
-        # STEP 1: Go from Input to Hidden_1 nodes  #
+        # STEP 1: Go from Input to Hidden1  nodes  #
         ############################################
         # 1A. Initialize hidden_sums with the sum  #
         # of input value multiplied by his weight. #
@@ -220,7 +188,7 @@ class NeuralNetwork:
             self.hidden_hidden[eo_i] = self.hidden_activation(hidden_sums_1[eo_i])
 
         ############################################
-        # STEP 2: Go from Hidden_1 to Hidden_2 node#
+        # STEP 2: Go from Hidden1 to Hidden2 nodes #
         ############################################
         # 1A. Initialize hidden_sums with the sum  #
         # of input value multiplied by his weight. #
@@ -239,7 +207,7 @@ class NeuralNetwork:
             self.hidden_outputs[eo_i] = self.hidden_activation(hidden_sums_2[eo_i])
 
         ############################################
-        # STEP 3: Go from Hidden_1 to Output nodes #
+        # STEP 3: Go from Hidden1 to Output nodes  #
         ############################################
         # 1A. Initialize output_sums with the sum  #
         # of hidden value multiplied by his weight.#
@@ -268,19 +236,19 @@ class NeuralNetwork:
         #############################################
 
         # Set the gradient lists
-        hidden_gradients_1 = [0 for i in range(self.num_hidden)]
-        hidden_gradients_2 = [0 for i in range(self.num_hidden)]
-        output_gradients = [0 for i in range(self.num_output)]
+        hidden_gradients_1 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        hidden_gradients_2 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        output_gradients = self.generate_matrix(False, 1, self.num_output)[0]
 
         # Set the lists to store delta values. This deltas will be used with momentum
-        input_hidden_deltas = [[0 for i in range(self.num_hidden)] for j in range(self.num_input)]
-        hidden_hidden_deltas = [[0 for i in range(self.num_hidden)] for j in range(self.num_hidden)]
-        hidden_output_deltas = [[0 for i in range(self.num_output)] for j in range(self.num_hidden)]
+        input_hidden_deltas = self.generate_matrix(False, self.num_input, self.num_hidden)
+        hidden_hidden_deltas = self.generate_matrix(False, self.num_hidden, self.num_hidden)
+        hidden_output_deltas = self.generate_matrix(False, self.num_hidden, self.num_output)
 
         # Set the lists to store bias values. This biases will be used with momentum
-        hidden_bias_deltas_1 = [0 for i in range(self.num_hidden)]
-        hidden_bias_deltas_2 = [0 for i in range(self.num_hidden)]
-        output_bias_deltas = [0 for i in range(self.num_output)]
+        hidden_bias_deltas_1 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        hidden_bias_deltas_2 = self.generate_matrix(False, 1, self.num_hidden)[0]
+        output_bias_deltas = self.generate_matrix(False, 1, self.num_output)[0]
 
         #############################################
         # STEP 1: Compute Gradients                 #
@@ -420,8 +388,13 @@ class NeuralNetwork:
     ################################################
     # Formula:                                     #
     #              (1 - e^(-2 * x))                #
-    #              ----------------                #
+    #      TANH =  ----------------                #
     #              (1 - e^(-2 * x))                #
+    #                                              #
+    ################################################
+    # Derivative:                                  #
+    #                                              #
+    #    TANH' =  (1 - TANH(x)) * (1 + TANH(x))    #
     #                                              #
     ################################################
     #           HIDDEN ACTIVATION NODES            #
@@ -450,8 +423,13 @@ class NeuralNetwork:
     ################################################
     # Formula:                                     #
     #                  e^(x[i])                    #
-    #              ---------------                 #
+    #         SM = ---------------                 #
     #               sum(e^(x[i]))                  #
+    #                                              #
+    ################################################
+    # Derivative:                                  #
+    #                                              #
+    #          SM' =  (1 - SM(x)) * SM(x)          #
     #                                              #
     ################################################
     #           OUTPUT ACTIVATION NODES            #
@@ -484,6 +462,24 @@ class NeuralNetwork:
     # Generate a random number between lower and upper bound
     def generate_rand(self):
         return ((self.lower_bound - self.upper_bound) * random.random()) + self.upper_bound
+
+    # Generate a matrix given the numbers of rows and columns and fill it with 0 or random number
+    def generate_matrix(self, rand, rows, columns):
+
+        matrix = []
+        for i in range(rows):
+
+            row = []
+            for j in range(columns):
+
+                if rand:
+                    row.append(self.generate_rand())
+                else:
+                    row.append(0)
+
+            matrix.append(row)
+
+        return matrix
 
     # Divide the tuples of dataset in attribute and target lists
     def divide_tuple(self, data, index):

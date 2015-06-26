@@ -115,7 +115,7 @@ class GUI (Tk):
         self.txt_fs_type_fs_hl.grid(column=5, row=6, padx=0, pady=1, sticky=W)
 
         self.var_fs_type_fs_criterion = IntVar()
-        lbl_fs_type_fs_criterion = Label(self, text="Criterion:")
+        lbl_fs_type_fs_criterion = Label(self, text="Condition:")
         lbl_fs_type_fs_criterion.grid(column=6, row=6, padx=10, pady=0, sticky='WE', columnspan=2)
         self.txt_fs_type_fs_criterion_eq = Radiobutton(self, text=">=", var=self.var_fs_type_fs_criterion, value=0,
                                                        command=self.disable_fs_info)
@@ -131,14 +131,14 @@ class GUI (Tk):
         lbl_nn.grid(column=0, row=8, padx=5, pady=5, columnspan=9)
 
         self.var_nn_hidden = IntVar()
-        lbl_nn_hidden = Label(self, text="Hidden Nodes #:")
+        lbl_nn_hidden = Label(self, text="Add Hidden Nodes:")
         lbl_nn_hidden.grid(column=0, row=9, padx=10, pady=0, sticky='E')
-        txt_nn_hidden = Spinbox(self, textvariable=self.var_nn_hidden, from_=0, to=100, width=7)
+        txt_nn_hidden = Spinbox(self, textvariable=self.var_nn_hidden, from_=-100, to=100, width=7)
         txt_nn_hidden.grid(column=1, row=9, padx=0, pady=0, sticky='W')
         self.var_nn_hidden.set(1)
 
         self.var_nn_epochs = IntVar()
-        lbl_nn_epochs = Label(self, text="Epochs #:")
+        lbl_nn_epochs = Label(self, text="Epochs:")
         lbl_nn_epochs.grid(column=2, row=9, padx=10, pady=0, sticky='E')
         txt_nn_epochs = Spinbox(self, textvariable=self.var_nn_epochs, from_=0, to=100000, width=7)
         txt_nn_epochs.grid(column=3, row=9, padx=5, pady=5, sticky='W')
@@ -180,11 +180,11 @@ class GUI (Tk):
         self.var_nn_val.trace('w', self.disable_early_stop)
         self.var_nn_val.set(0)
 
-        lbl_exe = Label(self, text="RESULTS")
+        lbl_exe = Label(self, text="RESULT")
         lbl_exe.grid(column=0, row=11, padx=5, pady=5, columnspan=9)
 
         self.var_output_path = StringVar()
-        lbl_output_path = Label(self, text="Save Results in:")
+        lbl_output_path = Label(self, text="Save Result in:")
         lbl_output_path.grid(column=0, row=12, padx=10, pady=0, sticky='E')
         self.txt_output_path = Entry(self, textvariable=self.var_output_path, width=80)
         self.txt_output_path.grid(column=1, row=12, padx=0, pady=10, columnspan=5)
@@ -193,7 +193,7 @@ class GUI (Tk):
         self.txt_output_path.configure(state=DISABLED)
 
         self.var_output_save = BooleanVar()
-        lbl_output_save = Label(self, text="Save Results:")
+        lbl_output_save = Label(self, text="Save Result:")
         lbl_output_save.grid(column=7, row=12, padx=10, pady=0, sticky='E')
         txt_output_save = Checkbutton(self, variable=self.var_output_save, command=self.disable_output_path)
         txt_output_save.grid(column=8, row=12, padx=10, pady=5, sticky='W')
@@ -217,7 +217,7 @@ class GUI (Tk):
 
     # Get Path for output files
     def select_output_path(self):
-        path = tkFileDialog.askdirectory(parent=self, title='Choose a Output Directory')
+        path = tkFileDialog.askdirectory(parent=self, title='Choose an Output Directory')
         if path.strip() != '':
             self.var_output_path.set(path)
 
@@ -267,7 +267,6 @@ class GUI (Tk):
             self.txt_fs_type_fs_criterion_eq.configure(state=DISABLED)
             self.txt_fs_type_fs_criterion_neq.configure(state=DISABLED)
 
-
     def disable_early_stop(self, a, b, c):
         if self.var_nn_val.get() == 0:
             self.txt_nn_es.configure(state=DISABLED)
@@ -279,10 +278,8 @@ class GUI (Tk):
         # Check if some fields are filled
         if self.var_dataset_path.get().strip() == '':
             tkMessageBox.showwarning("Dataset", "Insert Dataset Path")
-        elif self.var_fs_type.get().strip() == '':
-            tkMessageBox.showwarning("Features Selection", "Select the Features Selection Method")
         elif (self.var_output_save.get()) and (self.var_output_path.get().strip() == ''):
-            tkMessageBox.showwarning("Output", "Select Path to store Results")
+            tkMessageBox.showwarning("Output", "Select Directory to store the Result")
         else:
 
             if self.var_dataset_delimiter.get() == '':
@@ -306,6 +303,7 @@ class GUI (Tk):
                                self.var_nn_n.get(), self.var_nn_m.get(), self.var_nn_val.get(),
                                self.var_fs_type.get(), self.var_fs_type_f.get(), self.var_fs_type_fs.get(),
                                self.var_fs_type_fs_criterion.get())
+
 
 if __name__ == "__main__":
     app = GUI()

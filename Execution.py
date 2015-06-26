@@ -103,7 +103,7 @@ class Initialization:
                 subset_val = []
 
             # Train the Network
-            print("\nTrain Network with the subset %i..." % (i+1))
+            print("\nTraining Network with the subset %i..." % (i+1))
             neural_network.train(subset_train_new, subset_val)
             print("Training Finished!")
 
@@ -116,21 +116,21 @@ class Initialization:
             print("Test Finished!")
 
             # Calculate the accuracy
-            temp_accuracy = (float(iter_result[1]) / (float(iter_result[1]) + float(iter_result[2]))) * 100
+            temp_accuracy = (float(iter_result[0]) / (float(iter_result[0]) + float(iter_result[1]))) * 100
 
             # Print the subset results
             print("\nResults with the subset %i:" % (i+1))
             print("\tRight:    {0}\n"
                   "\tWrong:    {1}\n"
-                  "\tAccuracy: {2}%".format(iter_result[1], iter_result[2], round(temp_accuracy, 1)))
+                  "\tAccuracy: {2}%".format(iter_result[0], iter_result[1], round(temp_accuracy, 1)))
 
         correct = 0.0
         incorrect = 0.0
 
         # Get all results
         for result in cross_validation_results:
-            correct += result[1]
-            incorrect += result[2]
+            correct += result[0]
+            incorrect += result[1]
 
         # Compute the neural network result and store it
         accuracy = correct / (correct + incorrect)
@@ -175,7 +175,7 @@ class Initialization:
             # Set output file name
             output_image_path = self.get_filename('png')
 
-            # Redirect console output to file
+            # Copy console output to file
             output_file = open(output_file_path, 'w')
             sys.stdout = Output(sys.stdout, output_file)
 
@@ -254,9 +254,9 @@ class Initialization:
             else:
                 print("Features Order:     %s" % 'High -> Low')
             if self.fs_criterion == 0:
-                print("Criterion:          %s" % '>=')
+                print("Condition:          %s" % '>=')
             else:
-                print("Criterion:          %s" % '>')
+                print("Condition:          %s" % '>')
         print("CrossValidation:    %i folds" % self.num_folds)
         print("Epochs:             %i" % self.num_epochs)
         print("Learning Rate:      %f" % self.learning_rate)
