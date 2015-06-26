@@ -186,9 +186,12 @@ class Initialization:
         mapped_classes = data.get_mapped_class()
 
         # Define network variables
+        num_input_nodes_original = dataset_info[1]
         num_input_nodes = dataset_info[1]
         num_hidden_nodes = dataset_info[1] + self.num_hidden_nodes_plus
         num_output_nodes = dataset_info[2]
+
+        attributes_mapped = []
 
         # Execute Features Selection
         if (self.fs == "VT") or (self.fs == "FS"):
@@ -213,7 +216,7 @@ class Initialization:
                 attributes_mapped.sort(key=itemgetter(2))
                 attributes_mapped = attributes_mapped[::-1]
 
-        else:
+        elif self.fs == "FCBF":
 
             # Initialize FCBF
             fcbf = FCBF(dataset_info[3], self.fcbf_delta)
@@ -446,6 +449,13 @@ class Initialization:
 
                 it += 1
 
+        else:
+
+            # ------------ NETWORK EXECUTION  ------------ #
+
+            self.network_execution(dataset, num_input_nodes, mapped_classes,
+                                   neural_network, network_results)
+
         if self.fs == "FS":
             # Print the list of best features
             print "\nFinal Best Attributes: ", final_attr_list
@@ -457,6 +467,14 @@ class Initialization:
             attributes.append(result[0])
             accuracies.append(result[1])
 
+        # Get the final number of attributes
+        if self.fs == "FS":
+            len_attributes = len(final_attr_list)
+        elif (self.fs == "VT") or (self.fs == "FCBF"):
+            len_attributes = num_input_nodes_original
+        else:
+            len_attributes = num_input_nodes
+
         # Create a plot to show the final network results
         fig = plot.figure()
         fig.canvas.set_window_title(self.dataset_name)
@@ -464,7 +482,7 @@ class Initialization:
         plot.xlabel('Attributes')
         plot.ylabel('Accuracy')
         plot.grid(True)
-        plot.axis([0, len(final_attr_list)+1, 0, 1])
+        plot.axis([0, len_attributes+1, 0, 1])
         plot.plot(attributes, accuracies, 'ro')
 
         end_time = time.time()
