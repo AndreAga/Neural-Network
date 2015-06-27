@@ -27,18 +27,18 @@ class Initialization:
 
     def __init__(self, save_result, save_result_path, dataset_path, dataset_name, delimiter, num_attributes,
                  class_index, variance_min, variance_max, num_folds, num_shake, num_hidden_nodes_plus, num_epochs,
-                 early_stop, learning_rate, momentum, val_percent, feature_type, fcbf_delta, fs_order, fs_criterion):
+                 early_stop, learning_rate, momentum, val_percent, features_type, fcbf_delta, fs_order, fs_condition):
 
         # Set all variables
         self.delimiter = delimiter
         self.num_attributes = num_attributes
         self.class_index = class_index
-        self.fs = feature_type
+        self.fs = features_type
         self.variance_min = variance_min
         self.variance_max = variance_max
         self.fcbf_delta = fcbf_delta
         self.fs_order = fs_order
-        self.fs_criterion = fs_criterion
+        self.fs_condition = fs_condition
         self.num_folds = num_folds
         self.val_percent = val_percent
         self.early_stop = early_stop
@@ -162,7 +162,7 @@ class Initialization:
 
         original_stdout = sys.stdout
 
-        # Create the name of new output and image files
+        # Create the name of the new output and image files
         if self.save_result:
 
             # Check if output path exist
@@ -203,9 +203,9 @@ class Initialization:
             # Get mapped attributes
             attributes_mapped = vt.get_mapped_attributes()
 
-            # Reverse attributes order if features selection is Forward Selection {[5,4,3,2,1] => [1,2,3,4,5]}
+            # Reverse attributes order
             if self.fs == "FS":
-                # Sort attributes by variance
+                # Sort attributes by variance (Skip this if 'Original' option is checked)
                 if self.fs_order == 1:
                     attributes_mapped.sort(key=itemgetter(2))
                 if self.fs_order == 2:
@@ -253,7 +253,7 @@ class Initialization:
                 print("Features Order:     %s" % 'Low -> High')
             else:
                 print("Features Order:     %s" % 'High -> Low')
-            if self.fs_criterion == 0:
+            if self.fs_condition == 0:
                 print("Condition:          %s" % '>=')
             else:
                 print("Condition:          %s" % '>')
@@ -314,7 +314,7 @@ class Initialization:
                     self.network_execution(dataset, num_input_nodes, mapped_classes,
                                            neural_network, network_results)
 
-                # ------ FEATURES SELECTIONS EXECUTION  ------ #
+                # ------- FEATURES SELECTION EXECUTION  ------ #
 
                 if it < len(attributes_mapped)-1:
 
@@ -329,8 +329,8 @@ class Initialization:
                         # Skip if is the last attribute negative
                         if len(new_dataset_edit) > 1:
 
-                            # Print Feature Selection information
-                            print("\nFeature Selection: Attribute Elimination")
+                            # Print Features Selection information
+                            print("\nFeatures Selection: Delete Attribute")
                             print("\tIndex:    %i" % (index + 1))
                             if self.fs == "VT":
                                 print("\tVariance: %.3f" % var)
@@ -377,12 +377,12 @@ class Initialization:
                     tmp_accuracy = self.network_execution(dataset, num_input_nodes, mapped_classes,
                                                           neural_network, network_results)
 
-                # ------ FEATURES SELECTIONS EXECUTION  ------ #
+                # ------- FEATURES SELECTION EXECUTION  ------ #
 
                     print '\nEvaluated Features: ', final_attr_list
 
                     # If it's better update it, otherwise remove the feature
-                    if self.fs_criterion == 1:
+                    if self.fs_condition == 1:
                         if tmp_accuracy > max_accuracy:
                             print "\nNew Best Accuracy: {0}%".format(round((tmp_accuracy * 100), 1))
                             max_accuracy = tmp_accuracy
@@ -414,8 +414,8 @@ class Initialization:
                     # Check if the feature variance is not 0, otherwise skip it
                     if var != 0:
 
-                        # Print Feature Selection information
-                        print("\nFeature Selection: Adding Attribute")
+                        # Print Features Selection information
+                        print("\nFeatures Selection: Add Attribute")
                         print("\tIndex:   %i" % (index + 1))
 
                         # Insert next feature
@@ -441,7 +441,7 @@ class Initialization:
                         skip = False
 
                     else:
-                        print("\nFeature Selection: Skip Attribute")
+                        print("\nFeatures Selection: Skip Attribute")
                         print("\tIndex:    %i" % (index + 1))
                         print("\tVariance: 0.0")
 
@@ -460,7 +460,7 @@ class Initialization:
             # Print the list of best features
             print "\nFinal Best Attributes: ", final_attr_list
 
-        # Get final accuracies and number of attributes
+        # Get final accuracies and the number of attributes
         attributes = []
         accuracies = []
         for result in network_results:
@@ -485,12 +485,13 @@ class Initialization:
         plot.axis([0, len_attributes+1, 0, 1])
         plot.plot(attributes, accuracies, 'ro')
 
+        # Get elapsed time
         end_time = time.time()
         print '\nTime Elapsed: ', int((end_time - start_time) / 60.0), ' minutes'
 
         print("\nExecution Ended!")
 
-        # Show Results
+        # Show results
         fig.show()
 
         sys.stdout = original_stdout

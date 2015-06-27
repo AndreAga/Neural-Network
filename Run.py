@@ -114,16 +114,16 @@ class GUI (Tk):
                                              command=self.disable_fs_info)
         self.txt_fs_type_fs_hl.grid(column=5, row=6, padx=0, pady=1, sticky=W)
 
-        self.var_fs_type_fs_criterion = IntVar()
-        lbl_fs_type_fs_criterion = Label(self, text="Condition:")
-        lbl_fs_type_fs_criterion.grid(column=6, row=6, padx=10, pady=0, sticky='WE', columnspan=2)
-        self.txt_fs_type_fs_criterion_eq = Radiobutton(self, text=">=", var=self.var_fs_type_fs_criterion, value=0,
+        self.var_fs_type_fs_condition = IntVar()
+        lbl_fs_type_fs_condition = Label(self, text="Condition:")
+        lbl_fs_type_fs_condition.grid(column=6, row=6, padx=10, pady=0, sticky='WE', columnspan=2)
+        self.txt_fs_type_fs_condition_eq = Radiobutton(self, text=">=", var=self.var_fs_type_fs_condition, value=0,
                                                        command=self.disable_fs_info)
-        self.txt_fs_type_fs_criterion_eq.grid(column=7, row=6, padx=0, pady=0, sticky=E)
-        self.txt_fs_type_fs_criterion_neq = Radiobutton(self, text=">", var=self.var_fs_type_fs_criterion, value=1,
+        self.txt_fs_type_fs_condition_eq.grid(column=7, row=6, padx=0, pady=0, sticky=E)
+        self.txt_fs_type_fs_condition_neq = Radiobutton(self, text=">", var=self.var_fs_type_fs_condition, value=1,
                                                         command=self.disable_fs_info)
-        self.txt_fs_type_fs_criterion_neq.grid(column=8, row=6, padx=0, pady=1, sticky=W)
-        self.txt_fs_type_fs_criterion_neq.select()
+        self.txt_fs_type_fs_condition_neq.grid(column=8, row=6, padx=0, pady=1, sticky=W)
+        self.txt_fs_type_fs_condition_neq.select()
 
         self.disable_fs_info()
 
@@ -237,8 +237,8 @@ class GUI (Tk):
             self.txt_fs_type_fs_i.configure(state=DISABLED)
             self.txt_fs_type_fs_lh.configure(state=DISABLED)
             self.txt_fs_type_fs_hl.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_eq.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_neq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_eq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_neq.configure(state=DISABLED)
         elif self.var_fs_type.get() == 'FCBF':
             self.txt_fs_type_vt_min.configure(state=DISABLED)
             self.txt_fs_type_vt_max.configure(state=DISABLED)
@@ -246,8 +246,8 @@ class GUI (Tk):
             self.txt_fs_type_fs_i.configure(state=DISABLED)
             self.txt_fs_type_fs_lh.configure(state=DISABLED)
             self.txt_fs_type_fs_hl.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_eq.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_neq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_eq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_neq.configure(state=DISABLED)
         elif self.var_fs_type.get() == 'FS':
             self.txt_fs_type_vt_min.configure(state=DISABLED)
             self.txt_fs_type_vt_max.configure(state=DISABLED)
@@ -255,8 +255,8 @@ class GUI (Tk):
             self.txt_fs_type_fs_i.configure(state=NORMAL)
             self.txt_fs_type_fs_lh.configure(state=NORMAL)
             self.txt_fs_type_fs_hl.configure(state=NORMAL)
-            self.txt_fs_type_fs_criterion_eq.configure(state=NORMAL)
-            self.txt_fs_type_fs_criterion_neq.configure(state=NORMAL)
+            self.txt_fs_type_fs_condition_eq.configure(state=NORMAL)
+            self.txt_fs_type_fs_condition_neq.configure(state=NORMAL)
         else:
             self.txt_fs_type_vt_min.configure(state=DISABLED)
             self.txt_fs_type_vt_max.configure(state=DISABLED)
@@ -264,8 +264,8 @@ class GUI (Tk):
             self.txt_fs_type_fs_i.configure(state=DISABLED)
             self.txt_fs_type_fs_lh.configure(state=DISABLED)
             self.txt_fs_type_fs_hl.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_eq.configure(state=DISABLED)
-            self.txt_fs_type_fs_criterion_neq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_eq.configure(state=DISABLED)
+            self.txt_fs_type_fs_condition_neq.configure(state=DISABLED)
 
     def disable_early_stop(self, a, b, c):
         if self.var_nn_val.get() == 0:
@@ -302,7 +302,7 @@ class GUI (Tk):
                                self.var_nn_hidden.get(), self.var_nn_epochs.get(), self.var_nn_es.get(),
                                self.var_nn_n.get(), self.var_nn_m.get(), self.var_nn_val.get(),
                                self.var_fs_type.get(), self.var_fs_type_f.get(), self.var_fs_type_fs.get(),
-                               self.var_fs_type_fs_criterion.get())
+                               self.var_fs_type_fs_condition.get())
 
 
 if __name__ == "__main__":
