@@ -110,7 +110,7 @@ class NeuralNetwork:
                         error_sum += (values[1][i] - self.outputs[i]) ** 2
 
                 # Compute Error = SUM[(Xt - Xn)^2] / 2
-                new_error = error_sum * 0.5
+                new_error = error_sum / len(validation_set)
 
                 # If minimum error has been reached stop
                 # It uses two errors to ensure that small fluctuations don't change early stopping in premature stopping
