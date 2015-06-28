@@ -305,19 +305,19 @@ class NeuralNetwork:
         # PWD = Previous Weight Delta               #
         #############################################
 
-        # From Input to Hidden_1
-        for bp_i in range(self.num_input):
-            for bp_j in range(self.num_hidden):
+        # Hidden_2 -> Output
+        for bp_i in range(self.num_hidden):
+            for bp_j in range(self.num_output):
                 # Calculate the delta
-                delta_value = hidden_gradients_1[bp_j] * self.inputs[bp_i] * self.learning_rate
+                delta_value = output_gradients[bp_j] * self.hidden_outputs[bp_i] * self.learning_rate
                 # Calculate the increment of the new weight
-                increment = input_hidden_deltas[bp_i][bp_j] * self.momentum
+                increment = hidden_output_deltas[bp_i][bp_j] * self.momentum
                 # Calculate the new weight
-                self.weights_inputs_hidden[bp_i][bp_j] += delta_value + increment
+                self.weights_hidden_outputs[bp_i][bp_j] += delta_value + increment
                 # Store delta for the next iteration
-                input_hidden_deltas[bp_i][bp_j] = delta_value
+                hidden_output_deltas[bp_i][bp_j] = delta_value
 
-        # From Hidden_1 to Hidden_2
+        # Hidden_1 -> Hidden_2
         for bp_i in range(self.num_hidden):
             for bp_j in range(self.num_hidden):
                 # Calculate the delta
@@ -329,17 +329,17 @@ class NeuralNetwork:
                 # Store delta for the next iteration
                 hidden_hidden_deltas[bp_i][bp_j] = delta_value
 
-        # From Hidden_2 to Output
-        for bp_i in range(self.num_hidden):
-            for bp_j in range(self.num_output):
+        # Input -> Hidden_1
+        for bp_i in range(self.num_input):
+            for bp_j in range(self.num_hidden):
                 # Calculate the delta
-                delta_value = output_gradients[bp_j] * self.hidden_outputs[bp_i] * self.learning_rate
+                delta_value = hidden_gradients_1[bp_j] * self.inputs[bp_i] * self.learning_rate
                 # Calculate the increment of the new weight
-                increment = hidden_output_deltas[bp_i][bp_j] * self.momentum
+                increment = input_hidden_deltas[bp_i][bp_j] * self.momentum
                 # Calculate the new weight
-                self.weights_hidden_outputs[bp_i][bp_j] += delta_value + increment
+                self.weights_inputs_hidden[bp_i][bp_j] += delta_value + increment
                 # Store delta for the next iteration
-                hidden_output_deltas[bp_i][bp_j] = delta_value
+                input_hidden_deltas[bp_i][bp_j] = delta_value
 
         #############################################
         # STEP 3: Update Biases                     #
@@ -352,14 +352,14 @@ class NeuralNetwork:
         # PWD = Previous Weight Delta               #
         #############################################
 
-        # Hidden_1 Biases
-        for bp_i in range(self.num_hidden):
+        # Output Biases
+        for bp_i in range(self.num_output):
             # Calculate the delta
-            delta_value = hidden_gradients_1[bp_i] * self.learning_rate
+            delta_value = output_gradients[bp_i] * self.learning_rate
             # Calculate the new bias
-            self.hidden_biases_1[bp_i] += delta_value + (hidden_bias_deltas_1[bp_i] * self.momentum)
+            self.output_biases[bp_i] += delta_value + (output_bias_deltas[bp_i] * self.momentum)
             # Store delta for the next iteration
-            hidden_bias_deltas_1[bp_i] = delta_value
+            output_bias_deltas[bp_i] = delta_value
 
         # Hidden_2 Biases
         for bp_i in range(self.num_hidden):
@@ -370,14 +370,14 @@ class NeuralNetwork:
             # Store delta for the next iteration
             hidden_bias_deltas_2[bp_i] = delta_value
 
-        # Output Biases
-        for bp_i in range(self.num_output):
+        # Hidden_1 Biases
+        for bp_i in range(self.num_hidden):
             # Calculate the delta
-            delta_value = output_gradients[bp_i] * self.learning_rate
+            delta_value = hidden_gradients_1[bp_i] * self.learning_rate
             # Calculate the new bias
-            self.output_biases[bp_i] += delta_value + (output_bias_deltas[bp_i] * self.momentum)
+            self.hidden_biases_1[bp_i] += delta_value + (hidden_bias_deltas_1[bp_i] * self.momentum)
             # Store delta for the next iteration
-            output_bias_deltas[bp_i] = delta_value
+            hidden_bias_deltas_1[bp_i] = delta_value
 
     # -------------------------------------------- #
 
