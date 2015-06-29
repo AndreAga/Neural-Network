@@ -453,8 +453,9 @@ class Initialization:
 
             # ------------ NETWORK EXECUTION  ------------ #
 
-            self.network_execution(dataset, num_input_nodes, mapped_classes,
-                                   neural_network, network_results)
+            self.network_execution(dataset, num_input_nodes, mapped_classes, neural_network, network_results)
+
+        # -------------------------------------------- #
 
         if self.fs == "FS":
             # Print the list of best features
