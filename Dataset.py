@@ -4,6 +4,7 @@ import copy
 
 
 class Dataset:
+
     def __init__(self, dataset_name, num_attributes, class_index, csv_delimiter, features_selection):
 
         # Initialize variables
